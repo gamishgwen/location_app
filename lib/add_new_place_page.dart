@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:location_app/places.dart';
+import 'package:location_app/places_source.dart';
 import 'package:provider/provider.dart';
 
 class AddNewPlace extends StatefulWidget {
@@ -17,8 +18,9 @@ void save(){
   if(_formKey.currentState!.validate()){
     _formKey.currentState!.save();
 
+    PlaceSource source = PlaceSource();
     final Place place=Place(_enteredPlace);
-    context.read<AllPlaces>().addPlace(place);
+   source.postAllPlaces(place);
   }
 }
   @override

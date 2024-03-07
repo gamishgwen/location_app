@@ -2,15 +2,18 @@ import 'package:flutter/cupertino.dart';
 
 class Place {
   final String placeName;
+
   Place(this.placeName);
-}
 
-class AllPlaces with ChangeNotifier{
-  final List<Place> places=[];
-  void addPlace(Place place){
-   places.add(place);
-   notifyListeners();
+  factory Place.fromJson(Map<String, dynamic> mapEntry){
+    return Place(mapEntry['name']!);
+  }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'name': placeName,
+
+    };
   }
 
 }
