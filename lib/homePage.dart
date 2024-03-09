@@ -27,21 +27,15 @@ class HomePage extends StatelessWidget {
         ),
         body: ListenableBuilder(
           listenable:context.read<AllPlaces>(),
-          builder:(context, child) => Column(
-            children: [
-             // for(int i=0; i<context.read<AllPlaces>().places.length;i++)
-                for( Place place in context.read<AllPlaces>().places)
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) {
-                        return PlacePage(place: place,);
-                      },
-                    ));
-                  },
-                  child: Text(place.placeName)),
-
-            ],
+          builder: (context, child) => ListView.builder(
+            itemCount: context.read<AllPlaces>().places.length,
+            itemBuilder: (context, index) => ListTile(leading: CircleAvatar(backgroundImage: FileImage(context.read<AllPlaces>().places[index].file)),title: Text(context.read<AllPlaces>().places[index].placeName),onTap:() {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) {
+                  return PlacePage(place: context.read<AllPlaces>().places[index]);
+                },
+              ));
+            }, ),
           ),
         ));
   }
