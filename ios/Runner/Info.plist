@@ -49,5 +49,7 @@
 	<string>To use images</string>
 	<key>NSCameraUsageDescription</key>
     <string>to use camera</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>This app needs access to location when open.</string>
 </dict>
 </plist>

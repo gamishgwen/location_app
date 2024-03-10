@@ -26,16 +26,23 @@ class HomePage extends StatelessWidget {
           title: Text('Your Places'),
         ),
         body: ListenableBuilder(
-          listenable:context.read<AllPlaces>(),
+          listenable: context.read<AllPlaces>(),
           builder: (context, child) => ListView.builder(
             itemCount: context.read<AllPlaces>().places.length,
-            itemBuilder: (context, index) => ListTile(leading: CircleAvatar(backgroundImage: FileImage(context.read<AllPlaces>().places[index].file)),title: Text(context.read<AllPlaces>().places[index].placeName),onTap:() {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) {
-                  return PlacePage(place: context.read<AllPlaces>().places[index]);
-                },
-              ));
-            }, ),
+            itemBuilder: (context, index) => ListTile(
+              leading: CircleAvatar(
+                  backgroundImage:
+                      FileImage(context.read<AllPlaces>().places[index].file)),
+              title: Text(context.read<AllPlaces>().places[index].placeName),subtitle: Text(context.read<AllPlaces>().places[index].location.address),
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) {
+                    return PlacePage(
+                        place: context.read<AllPlaces>().places[index]);
+                  },
+                ));
+              },
+            ),
           ),
         ));
   }
