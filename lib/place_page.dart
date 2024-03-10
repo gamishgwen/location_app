@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:location_app/add_new_place_page.dart';
+
 import 'package:location_app/map_page.dart';
 import 'package:location_app/places.dart';
 
@@ -36,7 +36,7 @@ class PlacePage extends StatelessWidget {
                 children: [
                   GestureDetector(onTap: (){
                     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                      return MapPage(place: place);
+                      return MapPage(longitude: place.location.longitude,latitude: place.location.latitude);
                     },));
                   },
                     child: CircleAvatar(radius: 80,

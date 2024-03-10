@@ -1,10 +1,9 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
-//import 'package:location/location.dart';
+import 'package:location_app/map_page.dart';
 import 'package:location_app/places.dart';
 import 'package:provider/provider.dart';
 
@@ -21,22 +20,28 @@ class _AddNewPlaceState extends State<AddNewPlace> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController placeController = TextEditingController();
   File? chosenImageFile;
-  //LocationData? _locationData;
-  Position? location;
-  String? address;
+  LocationData? _locationData;
+
+  void myLocation(double latitude, double longitude) async {
+    String address =
+        await LocationSource().getAddressFromLatLong(latitude, longitude);
+    setState(() {
+      _locationData = LocationData(
+          latitude: latitude, longitude: longitude, address: address);
+    });
+  }
 
   void save() {
     if (_formKey.currentState!.validate() &&
         chosenImageFile != null &&
-        location != null &&
-        address != null) {
+        _locationData != null) {
       final Place place = Place(
           placeController.text,
           chosenImageFile!,
           LocationData(
-              address: address!,
-              latitude: location!.latitude,
-              longitude: location!.longitude));
+              address: _locationData!.address,
+              latitude: _locationData!.latitude,
+              longitude: _locationData!.longitude));
 
       print(place);
 
@@ -60,9 +65,9 @@ class _AddNewPlaceState extends State<AddNewPlace> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: Navigator.of(context).pop,
-          icon: Icon(Icons.arrow_back_rounded),
+          icon: const Icon(Icons.arrow_back_rounded),
         ),
-        title: Text('Add new place'),
+        title: const Text('Add new place'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -73,9 +78,9 @@ class _AddNewPlaceState extends State<AddNewPlace> {
               children: [
                 TextFormField(
                   controller: placeController,
-                  decoration: InputDecoration(label: Text('Enter place')),
+                  decoration: const InputDecoration(label: Text('Enter place')),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 GestureDetector(
@@ -95,21 +100,19 @@ class _AddNewPlaceState extends State<AddNewPlace> {
                         child: chosenImageFile == null
                             ? ElevatedButton.icon(
                                 onPressed: () {},
-                                icon: Icon(Icons.camera),
-                                label: Text('Take Picture'))
+                                icon: const Icon(Icons.camera),
+                                label: const Text('Take Picture'))
                             : null,
                       )),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 Container(
                   height: 200,
                   width: double.infinity,
-                  child: location == null
-                      ? Center(child: Text('No location chosen'))
+                  child: _locationData == null
+                      ? const Center(child: Text('No location chosen'))
                       : Image.network(
-                          "https://maps.googleapis.com/maps/api/staticmap?center=${location!.latitude},${location!.longitude}&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:S%7C40.702147,-74.015794&markers=color:green%7Clabel:G%7C40.711614,-74.012318&markers=color:green%7Clabel:A%7C${location!.latitude},${location!.longitude}&key=${LocationSource.apiKey}"),
+                          "https://maps.googleapis.com/maps/api/staticmap?center=${_locationData!.latitude},${_locationData!.longitude}&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:S%7C40.702147,-74.015794&markers=color:green%7Clabel:G%7C40.711614,-74.012318&markers=color:green%7Clabel:A%7C${_locationData!.latitude},${_locationData!.longitude}&key=${LocationSource.apiKey}"),
                 ),
                 Row(
                   children: [
@@ -139,34 +142,45 @@ class _AddNewPlaceState extends State<AddNewPlace> {
 
                               final Position updatedLocation =
                                   await Geolocator.getCurrentPosition();
-
-                              setState(() {
-                                location = updatedLocation;
-                              });
-
-                              address = await LocationSource()
+                              String address = await LocationSource()
                                   .getAddressFromLatLong(
-                                      location!.latitude, location!.longitude);
+                                      updatedLocation.latitude,
+                                      updatedLocation.longitude);
+                              setState(() {
+                                _locationData = LocationData(
+                                    latitude: updatedLocation.latitude,
+                                    longitude: updatedLocation.longitude,
+                                    address: address);
+                              });
                             },
-                            icon: Icon(Icons.location_on_outlined),
-                            label: Text('Get current location'))
+                            icon: const Icon(Icons.location_on_outlined),
+                            label: const Text('Get current location'))
                       ],
                     ),
                     Row(
                       children: [
                         TextButton.icon(
-                            onPressed: () {},
-                            icon: Icon(Icons.map),
-                            label: Text('select on Map'))
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) {
+                                  return MapPage(
+                                      latitude:
+                                          _locationData?.latitude ?? 40.7142484,
+                                      longitude: _locationData?.longitude ??
+                                          -73.9614103,
+                                      myLocation: myLocation);
+                                },
+                              ));
+                            },
+                            icon: const Icon(Icons.map),
+                            label: const Text('select on Map'))
                       ],
                     )
                   ],
                 ),
                 ElevatedButton(
-                    onPressed: () {
-                      save();
-                    },
-                    child: Text('+Add Place'))
+                    onPressed: save,
+                    child: const Text('+Add Place'))
               ],
             ),
           ),
@@ -175,30 +189,3 @@ class _AddNewPlaceState extends State<AddNewPlace> {
     );
   }
 }
-
-//() async {
-//                               Location location = Location();
-//                               bool _serviceEnabled =
-//                                   await location.serviceEnabled();
-//                               if (!_serviceEnabled) {
-//                                 _serviceEnabled =
-//                                     await location.requestService();
-//                                 if (!_serviceEnabled) {
-//                                   return;
-//                                 }
-//                               }
-//                               PermissionStatus _permissionStatus =
-//                                   await location.hasPermission();
-//                               if (_permissionStatus ==
-//                                   PermissionStatus.denied) {
-//                                 _permissionStatus =
-//                                     await location.requestPermission();
-//                                 if (_permissionStatus !=
-//                                     PermissionStatus.granted) {
-//                                   return;
-//                                 }
-//                               }
-//
-//                               _locationData = await location.getLocation();
-//                               print(_locationData);
-//                             },

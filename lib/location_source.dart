@@ -7,7 +7,7 @@ class LocationSource {
 
   Future<String> getAddressFromLatLong(double lat, double long) async {
     Uri url = Uri.https("maps.googleapis.com", 'maps/api/geocode/json', {
-      'latlng': '40.714224,-73.961452',
+      'latlng': '$lat,$long',
       'key': apiKey
     });
     final http.Response response = await http.get(url);

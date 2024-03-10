@@ -33,7 +33,9 @@ class HomePage extends StatelessWidget {
               leading: CircleAvatar(
                   backgroundImage:
                       FileImage(context.read<AllPlaces>().places[index].file)),
-              title: Text(context.read<AllPlaces>().places[index].placeName),subtitle: Text(context.read<AllPlaces>().places[index].location.address),
+              title: Text(context.read<AllPlaces>().places[index].placeName),
+              subtitle: Text(
+                  context.read<AllPlaces>().places[index].location.address),
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) {
