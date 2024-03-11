@@ -1,14 +1,16 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:location_app/local_source.dart';
 import 'package:uuid/uuid.dart';
 
-class LocationData{
+class LocationData {
   final double latitude;
   final double longitude;
   final String address;
 
-  LocationData({required this.latitude,required this.longitude, required this.address});
+  LocationData(
+      {required this.latitude, required this.longitude, required this.address});
 
   @override
   String toString() {
@@ -30,12 +32,18 @@ class Place {
   }
 }
 
-class AllPlaces with ChangeNotifier{
-  final List<Place> places=[];
-  void addPlace(Place place){
-   places.add(place);
-   notifyListeners();
+class AllPlaces with ChangeNotifier {
+  List<Place> places = [];
 
+  Future<void> loadPlaces() async {
+    final PlaceLocalSource localSource = PlaceLocalSource();
+    places = await localSource.loadPlace();
+    notifyListeners();
   }
 
+  Future<void> insertPlace(Place placeNew) async {
+    final PlaceLocalSource localSource = PlaceLocalSource();
+    await localSource.insertPlace(placeNew);
+    loadPlaces();
+  }
 }

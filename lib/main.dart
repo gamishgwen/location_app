@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListenableProvider(
       create: (BuildContext context) {
-        return AllPlaces();
+        return AllPlaces()..loadPlaces();
       },
       child: MaterialApp(title: 'Flutter Groceries',
         theme: ThemeData.dark().copyWith(

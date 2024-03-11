@@ -45,7 +45,7 @@ class _AddNewPlaceState extends State<AddNewPlace> {
 
       print(place);
 
-      context.read<AllPlaces>().addPlace(place);
+      context.read<AllPlaces>().insertPlace(place);
     }
   }
 
